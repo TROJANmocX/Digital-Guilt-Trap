@@ -1,0 +1,451 @@
+:root {
+  --bg-color: #050505;
+  --text-primary: #e0e0e0;
+  --text-secondary: #888;
+  --accent-color: #ffffff;
+  --font-sans: 'Inter', sans-serif;
+  --font-serif: 'Playfair Display', serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: default;
+  /* Start with default, maybe change based on mood */
+}
+
+/* Background Texture */
+.noise-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.03;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
+  z-index: 1;
+}
+
+/* Eye Tracking */
+.eye {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%,
+      rgba(255, 255, 255, 0.08) 0%,
+      rgba(255, 255, 255, 0.02) 20%,
+      transparent 60%);
+  filter: blur(40px);
+  pointer-events: none;
+  z-index: 1;
+  /* Below text (10), above ambient (0) */
+  transition: transform 0.8s cubic-bezier(0.1, 0.8, 0.2, 1);
+  will-change: transform;
+}
+
+/* Pupil */
+.eye::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 15px;
+  /* Tiny pupil */
+  height: 15px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
+.ambient-light {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 120vw;
+  height: 120vh;
+  /* Small improvement to ambient light to not clash */
+  background: radial-gradient(circle at center, rgba(20, 20, 30, 0.6) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* --- Tangible Interactions --- */
+
+/* Click Burst FX */
+.click-burst {
+  position: absolute;
+  pointer-events: none;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: var(--accent-color);
+  text-transform: uppercase;
+  animation: floatUp 0.8s ease-out forwards;
+  z-index: 100;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+@keyframes floatUp {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -150%) scale(1.2);
+  }
+}
+
+/* Ghost Typing Overlay */
+.ghost-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 5;
+  /* Behind main text but above bg */
+}
+
+.ghost-text {
+  font-family: var(--font-serif);
+  font-size: 8vw;
+  color: rgba(255, 255, 255, 0.05);
+  text-align: center;
+  white-space: pre-wrap;
+  line-height: 1;
+  transition: all 0.1s;
+}
+
+.ghost-text.shake {
+  animation: shake 0.3s cubic-bezier(.36, .07, .19, .97) both;
+  color: rgba(255, 50, 50, 0.1);
+}
+
+/* Bait Button */
+.bait-container {
+  position: fixed;
+  bottom: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+}
+
+.bait-button {
+  background: transparent;
+  border: 1px solid rgba(255, 0, 0, 0.3);
+  color: rgba(255, 0, 0, 0.5);
+  padding: 10px 20px;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-transform: uppercase;
+}
+
+.bait-button:hover {
+  border-color: rgba(255, 0, 0, 0.8);
+  color: rgba(255, 0, 0, 0.8);
+  box-shadow: 0 0 15px rgba(255, 0, 0, 0.1);
+}
+
+.bait-button:active {
+  transform: scale(0.95);
+}
+
+/* Utilities */
+.shake {
+  animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) both;
+}
+
+.pulse {
+  animation: pulse 1s infinite;
+}
+
+@keyframes shake {
+
+  10%,
+  90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+
+  20%,
+  80% {
+    transform: translate3d(2px, 0, 0);
+  }
+
+  30%,
+  50%,
+  70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+
+  40%,
+  60% {
+    transform: translate3d(4px, 0, 0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    color: var(--text-primary);
+    text-shadow: none;
+  }
+
+  50% {
+    color: #ff4444;
+    text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+  }
+
+  100% {
+    color: var(--text-primary);
+    text-shadow: none;
+  }
+}
+
+/* --- Intimacy Features --- */
+
+/* Heat Map Canvas */
+#heat-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+  /* Low z-index but above bg */
+  mix-blend-mode: screen;
+  /* Changed for goo visibility */
+  filter: url(#goo);
+  /* Liquid Effect */
+  opacity: 0.8;
+}
+
+/* Climax Glitch Effect */
+.glitch-mode {
+  animation: glitch-skew 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
+  color: red !important;
+  text-shadow: 2px 2px #00f, -2px -2px #0f0;
+}
+
+.glitch-mode #judge-text {
+  font-size: 5rem !important;
+}
+
+@keyframes glitch-skew {
+  0% {
+    transform: skew(0deg);
+  }
+
+  20% {
+    transform: skew(-10deg);
+    filter: invert(1);
+  }
+
+  40% {
+    transform: skew(10deg);
+  }
+
+  60% {
+    transform: skew(-5deg);
+    filter: blur(2px);
+  }
+
+  80% {
+    transform: skew(5deg);
+  }
+
+  100% {
+    transform: skew(0deg);
+  }
+}
+
+/* Interrogation Modal */
+.interrogation-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 200;
+  backdrop-filter: blur(5px);
+  animation: fadeIn 0.5s ease-out;
+}
+
+.interrogation-box {
+  background: #111;
+  border: 1px solid #333;
+  padding: 40px;
+  text-align: center;
+  max-width: 400px;
+  border-radius: 4px;
+}
+
+.interrogation-question {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  margin-bottom: 30px;
+  color: #fff;
+}
+
+.interrogation-options {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.interrogation-btn {
+  background: transparent;
+  border: 1px solid #666;
+  color: #ccc;
+  padding: 10px 30px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.interrogation-btn:hover {
+  border-color: #fff;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Breath Sync Mode */
+.breath-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  z-index: 300;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.breath-circle {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 50px rgba(255, 255, 255, 0.5);
+}
+
+.breath-instruction {
+  margin-top: 40px;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  letter-spacing: 0.2em;
+  opacity: 0.7;
+}
+
+#app {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.void-container {
+  text-align: center;
+  max-width: 800px;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  /* Prevent layout shifts */
+}
+
+.judge-text {
+  font-family: var(--font-serif);
+  font-size: 3rem;
+  font-weight: 400;
+  color: var(--text-primary);
+  opacity: 0;
+  /* JS will handle fade in */
+  margin-bottom: 1.5rem;
+  line-height: 1.3;
+  transition: opacity 1.2s ease, transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transform: translateY(10px);
+}
+
+.judge-text.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.judge-text.fade-out {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.sub-text {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  color: var(--text-secondary);
+  font-weight: 300;
+  opacity: 0;
+  letter-spacing: 0.05em;
+  transition: opacity 0.8s ease;
+  min-height: 1.5em;
+  /* Reserve space */
+}
+
+.sub-text.visible {
+  opacity: 0.7;
+}
+
+/* Specific dramatic classes */
+.judge-text.dramatic {
+  color: #fff;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+.judge-text.intense {
+  font-style: italic;
+  letter-spacing: 0.1em;
+}
+
+@media (max-width: 768px) {
+  .judge-text {
+    font-size: 2rem;
+  }
+}

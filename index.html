@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Digital Guilt Trip</title>
+  <link rel="icon" href="favicon.png" />
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:ital,wght@1,400&display=swap"
+    rel="stylesheet">
+</head>
+
+<body>
+  <div id="app">
+    <div class="void-container">
+      <h1 class="judge-text" id="judge-text">Hi. Take a breath.</h1>
+      <div class="sub-text" id="sub-text"></div>
+    </div>
+
+    <!-- Subtle background elements -->
+    <div class="eye" id="eye">
+      <div class="pupil"></div>
+    </div>
+
+    <!-- SVG Filter for Gooey Effect -->
+    <svg style="position: absolute; width: 0; height: 0;">
+      <defs>
+        <filter id="goo">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+          <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="goo" />
+          <feComposite in="SourceGraphic" in2="goo" operator="atop" />
+        </filter>
+      </defs>
+    </svg>
+    <div class="ambient-light"></div>
+    <div class="noise-overlay"></div>
+  </div>
+  <script type="module" src="/main.js"></script>
+</body>
+
+</html>
